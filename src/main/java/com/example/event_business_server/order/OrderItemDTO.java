@@ -7,6 +7,8 @@ public class OrderItemDTO {
     private int quantity;
     private double price;
 
+    public OrderItemDTO() {}
+
     public OrderItemDTO(String productKey, String productName, String orderSize, int quantity, double price) {
         this.productKey = productKey;
         this.productName = productName;
