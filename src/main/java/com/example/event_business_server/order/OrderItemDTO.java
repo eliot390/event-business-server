@@ -5,11 +5,16 @@ public class OrderItemDTO {
     private String productName;
     private String orderSize;
     private int quantity;
-    private double price;
+    private Double price;
 
     public OrderItemDTO() {}
 
-    public OrderItemDTO(String productKey, String productName, String orderSize, int quantity, double price) {
+    public OrderItemDTO(
+            String productKey,
+            String productName,
+            String orderSize,
+            int quantity,
+            Double price) {
         this.productKey = productKey;
         this.productName = productName;
         this.orderSize = orderSize;

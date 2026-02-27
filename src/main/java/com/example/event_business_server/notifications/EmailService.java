@@ -24,6 +24,7 @@ public class EmailService {
     }
 
     public void sendOrderEmails(OrderRequest order) throws Exception {
+        System.out.println("Order items: " + order.getItems());
         sendBusinessEmail(order);
         sendCustomerEmail(order);
     }
@@ -31,12 +32,16 @@ public class EmailService {
     private void sendBusinessEmail(OrderRequest order) throws Exception {
         /* Send order email to me */
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        MimeMessageHelper helper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                "UTF-8");
 
         helper.setFrom(fromEmail);
         helper.setTo(notifyEMail);
         helper.setSubject("New Toasted Order Received: " + order.getName());
-        helper.setText(buildBusinessEmailBody(order));
+
+        String html = buildBusinessEmailBody(order);
+        helper.setText(html, true);
 
         mailSender.send(message);
     }
@@ -44,17 +49,78 @@ public class EmailService {
     private void sendCustomerEmail(OrderRequest order) throws Exception {
         /* Send order email to customer */
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        MimeMessageHelper helper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                "UTF-8");
 
         helper.setFrom(fromEmail);
         helper.setTo(order.getEmail());
-        helper.setSubject("Your order is in");
-        helper.setText(buildCustomerEmailBody(order));
+        helper.setSubject("Your order with Toasted is in!");
+
+        String html = buildCustomerEmailBody(order);
+        helper.setText(html, true);
+
         mailSender.send(message);
     }
 
     private String buildBusinessEmailBody(OrderRequest order){
-        return buildCommonBody(order, true);
+        StringBuilder itemsHtml = new StringBuilder();
+        double total = 0;
+
+        String addressHtml = "";
+
+        if (order.getDeliveryAddress() != null && !order.getDeliveryAddress().isBlank()) {
+            addressHtml = "<br/>Delivery address: %s".formatted(order.getDeliveryAddress());
+        }
+
+        for(OrderItemDTO item : order.getItems()){
+            double line = item.getQuantity() * item.getPrice();
+            total += line;
+
+            itemsHtml.append("""
+                <tr style="background:white;">
+                    <td style="padding:8px;">%s</td>
+                    <td style="padding:8px;">%s</td>
+                    <td style="padding:8px;">%d</td>
+                    <td style="padding:8px;">$%.2f</td>
+                </tr>
+              """.formatted(
+                    item.getProductName(),
+                    item.getOrderSize(),
+                    item.getQuantity(),
+                    line
+            ));
+        }
+
+        return """
+            <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
+               <h2 style="color:#2EC4B6;">New order for %s</h2>
+               <p>Delivery method: %s%s</p>
+               <table width="100%%" style="border-collapse:collapse;">
+                   <thead>
+                   <tr style="background:#FFE4C2; color:#2EC4B6; border-color:#FF9F1C; border-style:solid; border-width:2px;">
+                       <th align="left" style="padding:8px;">Item</th>
+                       <th align="left" style="padding:8px;">Size</th>
+                       <th align="left" style="padding:8px;">Qty</th>
+                       <th align="left" style="padding:8px;">Total</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                      %s
+                    </tbody>
+                </table>
+                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
+            </div>
+        """.formatted(
+                firstName(order.getName()),
+                order.getDeliveryMethod(),
+                addressHtml,
+                itemsHtml.toString(),
+                total);
+    }
+
+    private String firstName(String name){
+        return name.trim().split("\\s+")[0];
     }
 
     private String buildCustomerEmailBody(OrderRequest order){
@@ -66,7 +132,7 @@ public class EmailService {
             total += line;
 
             itemsHtml.append("""
-                <tr>
+                <tr style="background:white;">
                     <td style="padding:8px;">%s</td>
                     <td style="padding:8px;">%s</td>
                     <td style="padding:8px;">%d</td>
@@ -80,66 +146,30 @@ public class EmailService {
             ));
         }
 
-        return
-        """
-            <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto;">
-                <h2 style="color:#2f855a;">Thank you for your order, %s!</h2>
-                <p>We’ve received your dessert order. Here are the details:</p>
-        
-                <table width="100%%" style="border-collapse:collapse;">
-                    <thead>
-                        <tr style="background:#f6e05e;">
-                            <th align="left" style="padding:8px;">Item</th>
-                            <th align="left" style="padding:8px;">Size</th>
-                            <th align="left" style="padding:8px;">Qty</th>
-                            <th align="left" style="padding:8px;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+        return """
+            <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
+               <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
+               <p>We've received your order. Here are the details:</p>
+
+               <table width="100%%" style="border-collapse:collapse;">
+                   <thead>
+                   <tr style="background:#FFE4C2; color:#2EC4B6; border-color:#FF9F1C; border-style:solid; border-width:2px;">
+                       <th align="left" style="padding:8px;">Item</th>
+                       <th align="left" style="padding:8px;">Size</th>
+                       <th align="left" style="padding:8px;">Qty</th>
+                       <th align="left" style="padding:8px;">Total</th>
+                   </tr>
+                   </thead>
+                   <tbody>
                       %s
                     </tbody>
                 </table>
         
-                <h3 style="margin-top:20px;">Order Total: $%.2f</h3>
+                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
         
                 <p style="margin-top:20px;">We’ll contact you soon with pickup or delivery details.</p>
                 <p style="color:#718096; font-size:12px;">If you have questions, reply to this email.</p>
             </div>
-        """.formatted(order.getName(), itemsHtml.toString(), total);
-    }
-
-    private String buildCommonBody(OrderRequest order, boolean includeCustomerDetails) {
-        StringBuilder sb = new StringBuilder();
-
-        if(includeCustomerDetails){
-            sb.append("Customer:\n");
-            sb.append("Name: ").append(order.getName()).append("\n");
-            sb.append("Email: ").append(order.getEmail()).append("\n");
-            sb.append("Phone: ").append(order.getPhone()).append("\n\n");
-        }
-
-        sb.append("items:\n");
-        double computedTotal = 0;
-
-        for(OrderItemDTO item : order.getItems()){
-            double line = item.getQuantity() * item.getPrice();
-            computedTotal += line;
-
-            sb.append("- ")
-                    .append(item.getProductName())
-                    .append(" (").append(item.getOrderSize()).append(") ")
-                    .append("x").append(item.getQuantity())
-                    .append(" @ $").append(String.format("%.2f", item.getPrice()))
-                    .append(" = $").append(String.format("%.2f", line))
-                    .append("\n");
-        }
-
-        sb.append("\nTotal: $").append(String.format("%.2f", computedTotal)).append("\n");
-
-        if (order.getComments() != null && !order.getComments().isBlank()) {
-            sb.append("\nNotes:\n").append(order.getComments()).append("\n");
-        }
-
-        return sb.toString();
+        """.formatted(firstName(order.getName()), itemsHtml.toString(), total);
     }
 }

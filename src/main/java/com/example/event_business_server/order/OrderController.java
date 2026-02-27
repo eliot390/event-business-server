@@ -30,7 +30,8 @@ public class OrderController {
             return ResponseEntity.ok("Order received");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Order received, but failed to send email");
+            return ResponseEntity.status(500).body("Order received, but failed to send email: " + e.getMessage());
         }
     }
 }
+
