@@ -84,11 +84,11 @@ public class EmailService {
                     <td style="padding:8px;">%d</td>
                     <td style="padding:8px;">$%.2f</td>
                 </tr>
-              """.formatted(
-                    item.getProductName(),
-                    item.getOrderSize(),
-                    item.getQuantity(),
-                    line
+            """.formatted(
+                item.getProductName(),
+                item.getOrderSize(),
+                item.getQuantity(),
+                line
             ));
         }
 
@@ -112,11 +112,12 @@ public class EmailService {
                 <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
             </div>
         """.formatted(
-                firstName(order.getName()),
-                order.getDeliveryMethod(),
-                addressHtml,
-                itemsHtml.toString(),
-                total);
+            order.getName(),
+            order.getDeliveryMethod(),
+            addressHtml,
+            itemsHtml.toString(),
+            total
+        );
     }
 
     private String firstName(String name){
@@ -138,7 +139,7 @@ public class EmailService {
                     <td style="padding:8px;">%d</td>
                     <td style="padding:8px;">$%.2f</td>
                 </tr>
-              """.formatted(
+            """.formatted(
                  item.getProductName(),
                  item.getOrderSize(),
                  item.getQuantity(),
@@ -163,12 +164,12 @@ public class EmailService {
                    <tbody>
                       %s
                     </tbody>
-                </table>
+               </table>
         
-                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
+               <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
         
-                <p style="margin-top:20px;">We’ll contact you soon with pickup or delivery details.</p>
-                <p style="color:#718096; font-size:12px;">If you have questions, reply to this email.</p>
+               <p style="margin-top:20px;">We’ll contact you soon with pickup or delivery details.</p>
+               <p style="color:#718096; font-size:12px;">If you have questions, reply to this email.</p>
             </div>
         """.formatted(firstName(order.getName()), itemsHtml.toString(), total);
     }
