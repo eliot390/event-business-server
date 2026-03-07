@@ -128,6 +128,12 @@ public class EmailService {
         StringBuilder itemsHtml = new StringBuilder();
         double total = 0;
 
+        String addressHtml = "";
+
+        if (order.getDeliveryAddress() != null && !order.getDeliveryAddress().isBlank()) {
+            addressHtml = "<br/>Delivery address: %s".formatted(order.getDeliveryAddress());
+        }
+
         for(OrderItemDTO item : order.getItems()){
             double line = item.getQuantity() * item.getPrice();
             total += line;
@@ -151,6 +157,7 @@ public class EmailService {
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
                <p>We've received your order. Here are the details:</p>
+               <p>Delivery method: %s%s</p>
 
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
@@ -168,9 +175,13 @@ public class EmailService {
         
                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
         
-               <p style="margin-top:20px;">We’ll contact you soon with pickup or delivery details.</p>
-               <p style="color:#718096; font-size:12px;">If you have questions, reply to this email.</p>
+               <p style="color:#718096;">If you have questions, reply to this email.</p>
             </div>
-        """.formatted(firstName(order.getName()), itemsHtml.toString(), total);
+        """.formatted(
+           firstName(order.getName()),
+           order.getDeliveryMethod(),
+           addressHtml,
+           itemsHtml.toString(),
+           total);
     }
 }
