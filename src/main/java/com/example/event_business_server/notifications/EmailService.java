@@ -8,6 +8,9 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class EmailService {
 
@@ -63,6 +66,12 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    private String formattedDate(String orderDate) {
+        LocalDate date = LocalDate.parse(orderDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        return date.format(formatter);
+    }
+
     private String buildBusinessEmailBody(OrderRequest order){
         StringBuilder itemsHtml = new StringBuilder();
         double total = 0;
@@ -95,6 +104,7 @@ public class EmailService {
         return """
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
+               <p>Order Date: %s</p>
                <p>Delivery method: %s%s</p>
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
@@ -113,8 +123,8 @@ public class EmailService {
             </div>
         """.formatted(
             order.getName(),
-            order.getDeliveryMethod(),
-            addressHtml,
+            formattedDate(order.getOrderDate()),
+            order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
             total
         );
@@ -157,6 +167,7 @@ public class EmailService {
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
                <p>We've received your order. Here are the details:</p>
+               <p>Order Date: %s</p>
                <p>Delivery method: %s%s</p>
 
                <table width="100%%" style="border-collapse:collapse;">
@@ -179,8 +190,8 @@ public class EmailService {
             </div>
         """.formatted(
            firstName(order.getName()),
-           order.getDeliveryMethod(),
-           addressHtml,
+           order.getOrderDate(),
+           order.getDeliveryMethod(), addressHtml,
            itemsHtml.toString(),
            total);
     }
