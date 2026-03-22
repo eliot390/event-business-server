@@ -16,6 +16,7 @@ public class CorsConfig {
         registry.addMapping("/api/**")
                 .allowedOrigins(
                         "https://www.flourandflask.com",
+                        "https://flourandflask.com",
                         "http://localhost:5173"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
