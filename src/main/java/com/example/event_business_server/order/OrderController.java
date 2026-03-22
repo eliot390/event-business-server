@@ -4,9 +4,9 @@ import com.example.event_business_server.notifications.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = {"https://www.flourandflask.com", "https://flourandflask.com", "http://localhost:5173"})
 public class OrderController {
     private final EmailService emailService;
 
