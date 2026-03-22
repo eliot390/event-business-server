@@ -3,6 +3,7 @@ package com.example.event_business_server.order;
 import java.util.List;
 
 public class OrderRequest {
+    private String orderID;
     private String name;
     private String email;
     private String phone;
@@ -16,6 +17,7 @@ public class OrderRequest {
     public OrderRequest() {}
 
     public OrderRequest(
+            String orderID,
             String name,
             String email,
             String phone,
@@ -25,6 +27,7 @@ public class OrderRequest {
             String comments,
             List<OrderItemDTO> items,
             double total) {
+        this.orderID = orderID;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -34,6 +37,14 @@ public class OrderRequest {
         this.comments = comments;
         this.items = items;
         this.total = total;
+    }
+
+    public String getOrderID() {
+        return orderID;
+    }
+
+    public void setOrderID(String orderID) {
+        this.orderID = orderID;
     }
 
     public String getName() {
@@ -107,4 +118,5 @@ public class OrderRequest {
     public void setTotal(double total) {
         this.total = total;
     }
+
 }

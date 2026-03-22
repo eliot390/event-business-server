@@ -104,6 +104,7 @@ public class EmailService {
         return """
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
+               <p>Order # : %s</p>
                <p>Order Date: %s</p>
                <p>Delivery method: %s%s</p>
                <table width="100%%" style="border-collapse:collapse;">
@@ -123,6 +124,7 @@ public class EmailService {
             </div>
         """.formatted(
             order.getName(),
+            order.getOrderID(),
             formattedDate(order.getOrderDate()),
             order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
@@ -166,7 +168,7 @@ public class EmailService {
         return """
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
-               <p>We've received your order. Here are the details:</p>
+               <p>Order #: %s</p>
                <p>Order Date: %s</p>
                <p>Delivery method: %s%s</p>
 
@@ -190,7 +192,8 @@ public class EmailService {
             </div>
         """.formatted(
            firstName(order.getName()),
-           order.getOrderDate(),
+           order.getOrderID(),
+           formattedDate(order.getOrderDate()),
            order.getDeliveryMethod(), addressHtml,
            itemsHtml.toString(),
            total);
