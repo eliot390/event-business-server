@@ -58,7 +58,27 @@ public class EmailService {
         String addressHtml = "";
 
         if (order.getDeliveryAddress() != null && !order.getDeliveryAddress().isBlank()) {
-            addressHtml = "<br/>Delivery address: %s".formatted(order.getDeliveryAddress());
+            String address = order.getDeliveryAddress();
+            String city = order.getDeliveryCity();
+            String zip = order.getDeliveryZip();
+
+            StringBuilder formatted = new StringBuilder();
+            formatted.append(address);
+
+            if ((city != null && !city.isBlank()) || (zip != null && !zip.isBlank())) {
+                formatted.append("<br/>");
+
+                if (city != null && !city.isBlank()) {
+                    formatted.append(city);
+                }
+
+                if (zip != null && !zip.isBlank()) {
+                    formatted.append(city != null && !city.isBlank() ? ", " : "");
+                    formatted.append(zip);
+                }
+            }
+
+            addressHtml = "<br/>Delivery address:<br/>" + formatted;
         }
 
         for(OrderItemDTO item : order.getItems()){
@@ -83,10 +103,10 @@ public class EmailService {
         return """
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
-               <p>Order # : %s</p>
+               <p>Order #: %s</p>
                <p>Scheduled Delivery/Pickup: %s</p>
                <p>Phone: %s</p>
-               <p>Email: %s</p>
+               <p>E-mail: %s</p>
                <p>Comments: %s</p>
                <p>Delivery method: %s%s</p>
                <table width="100%%" style="border-collapse:collapse;">
@@ -128,7 +148,27 @@ public class EmailService {
         String addressHtml = "";
 
         if (order.getDeliveryAddress() != null && !order.getDeliveryAddress().isBlank()) {
-            addressHtml = "<br/>Delivery address: %s".formatted(order.getDeliveryAddress());
+            String address = order.getDeliveryAddress();
+            String city = order.getDeliveryCity();
+            String zip = order.getDeliveryZip();
+
+            StringBuilder formatted = new StringBuilder();
+            formatted.append(address);
+
+            if ((city != null && !city.isBlank()) || (zip != null && !zip.isBlank())) {
+                formatted.append("<br/>");
+
+                if (city != null && !city.isBlank()) {
+                    formatted.append(city);
+                }
+
+                if (zip != null && !zip.isBlank()) {
+                    formatted.append(city != null && !city.isBlank() ? ", " : "");
+                    formatted.append(zip);
+                }
+            }
+
+            addressHtml = "<br/>Delivery address:<br/>" + formatted;
         }
 
         for(OrderItemDTO item : order.getItems()){

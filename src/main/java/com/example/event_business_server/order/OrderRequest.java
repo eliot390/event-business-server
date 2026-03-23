@@ -9,6 +9,8 @@ public class OrderRequest {
     private String phone;
     private String deliveryMethod;
     private String deliveryAddress;
+    private String deliveryCity;
+    private String deliveryZip;
     private String orderDate;
     private String comments;
     private List<OrderItemDTO> items;
@@ -23,6 +25,8 @@ public class OrderRequest {
             String phone,
             String deliveryMethod,
             String deliveryAddress,
+            String deliveryCity,
+            String deliveryZip,
             String orderDate,
             String comments,
             List<OrderItemDTO> items,
@@ -33,6 +37,8 @@ public class OrderRequest {
         this.phone = phone;
         this.deliveryMethod = deliveryMethod;
         this.deliveryAddress = deliveryAddress;
+        this.deliveryCity = deliveryCity;
+        this.deliveryZip = deliveryZip;
         this.orderDate = orderDate;
         this.comments = comments;
         this.items = items;
@@ -85,6 +91,22 @@ public class OrderRequest {
 
     public void setDeliveryAddress(String deliveryAddress) {
         this.deliveryAddress = deliveryAddress;
+    }
+
+    public String getDeliveryCity() {
+        return deliveryCity;
+    }
+
+    public void setDeliveryCity(String deliveryCity) {
+        this.deliveryCity = deliveryCity;
+    }
+
+    public String getDeliveryZip() {
+        return deliveryZip;
+    }
+
+    public void setDeliveryZip(String deliveryZip) {
+        this.deliveryZip = deliveryZip;
     }
 
     public String getOrderDate() {
