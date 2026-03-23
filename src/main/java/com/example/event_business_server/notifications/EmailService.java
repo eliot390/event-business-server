@@ -4,72 +4,14 @@ import com.example.event_business_server.order.OrderItemDTO;
 import com.example.event_business_server.order.OrderRequest;
 import com.resend.Resend;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import com.resend.Resend;
 import com.resend.services.emails.model.SendEmailRequest;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-
-//    private final JavaMailSender mailSender;
-//
-//    @Value("${app.orders.notifyEmail:}")
-//    private String notifyEMail;
-//
-//    @Value("${app.mail.from:${spring.mail.username}}")
-//    private String fromEmail;
-//
-//    public EmailService(JavaMailSender mailSender) {
-//        this.mailSender = mailSender;
-//    }
-//
-//    public void sendOrderEmails(OrderRequest order) throws Exception {
-//        System.out.println("Order items: " + order.getItems());
-//        sendBusinessEmail(order);
-//        sendCustomerEmail(order);
-//    }
-//
-//    private void sendBusinessEmail(OrderRequest order) throws Exception {
-//        /* Send order email to me */
-//        MimeMessage message = mailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(message,
-//                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-//                "UTF-8");
-//
-//        helper.setFrom(fromEmail);
-//        helper.setTo(notifyEMail);
-//        helper.setSubject("New Toasted Order Received: " + order.getName());
-//
-//        String html = buildBusinessEmailBody(order);
-//        helper.setText(html, true);
-//
-//        mailSender.send(message);
-//    }
-//
-//    private void sendCustomerEmail(OrderRequest order) throws Exception {
-//        /* Send order email to customer */
-//        MimeMessage message = mailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(message,
-//                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-//                "UTF-8");
-//
-//        helper.setFrom(fromEmail);
-//        helper.setTo(order.getEmail());
-//        helper.setSubject("Your order with Toasted is in!");
-//
-//        String html = buildCustomerEmailBody(order);
-//        helper.setText(html, true);
-//
-//        mailSender.send(message);
-//    }
 
     private final Resend resend;
     private final String fromEmail;
@@ -97,7 +39,7 @@ public class EmailService {
         SendEmailRequest customerEmail = SendEmailRequest.builder()
                 .from(fromEmail)
                 .to(order.getEmail())
-                .subject("Your Flour & Flask order is in! - " + order.getOrderID())
+                .subject("Confirmed! We got your order " + order.getOrderID())
                 .html(buildCustomerEmailBody(order))
                 .build();
         resend.emails().send(customerEmail);
@@ -142,7 +84,10 @@ public class EmailService {
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
                <p>Order # : %s</p>
-               <p>Order Date: %s</p>
+               <p>Scheduled Delivery/Pickup: %s</p>
+               <p>Phone: %s</p>
+               <p>Email: %s</p>
+               <p>Comments: %s</p>
                <p>Delivery method: %s%s</p>
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
@@ -163,6 +108,9 @@ public class EmailService {
             order.getName(),
             order.getOrderID(),
             formattedDate(order.getOrderDate()),
+            order.getPhone(),
+            order.getEmail(),
+            order.getComments(),
             order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
             total
@@ -222,10 +170,12 @@ public class EmailService {
                       %s
                     </tbody>
                </table>
+               
+               <p>Customer Notes: %s</p>
         
                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
         
-               <p style="color:#718096;">If you have questions, reply to this email.</p>
+               <p style="color:#718096;">If you have questions, please contact us at chefeliotison.</p>
             </div>
         """.formatted(
            firstName(order.getName()),
@@ -233,6 +183,7 @@ public class EmailService {
            formattedDate(order.getOrderDate()),
            order.getDeliveryMethod(), addressHtml,
            itemsHtml.toString(),
+           order.getComments(),
            total);
     }
 }
