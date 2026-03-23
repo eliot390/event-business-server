@@ -2,68 +2,105 @@ package com.example.event_business_server.notifications;
 
 import com.example.event_business_server.order.OrderItemDTO;
 import com.example.event_business_server.order.OrderRequest;
+import com.resend.Resend;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import com.resend.Resend;
+import com.resend.services.emails.model.SendEmailRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+//    private final JavaMailSender mailSender;
+//
+//    @Value("${app.orders.notifyEmail:}")
+//    private String notifyEMail;
+//
+//    @Value("${app.mail.from:${spring.mail.username}}")
+//    private String fromEmail;
+//
+//    public EmailService(JavaMailSender mailSender) {
+//        this.mailSender = mailSender;
+//    }
+//
+//    public void sendOrderEmails(OrderRequest order) throws Exception {
+//        System.out.println("Order items: " + order.getItems());
+//        sendBusinessEmail(order);
+//        sendCustomerEmail(order);
+//    }
+//
+//    private void sendBusinessEmail(OrderRequest order) throws Exception {
+//        /* Send order email to me */
+//        MimeMessage message = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message,
+//                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+//                "UTF-8");
+//
+//        helper.setFrom(fromEmail);
+//        helper.setTo(notifyEMail);
+//        helper.setSubject("New Toasted Order Received: " + order.getName());
+//
+//        String html = buildBusinessEmailBody(order);
+//        helper.setText(html, true);
+//
+//        mailSender.send(message);
+//    }
+//
+//    private void sendCustomerEmail(OrderRequest order) throws Exception {
+//        /* Send order email to customer */
+//        MimeMessage message = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message,
+//                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+//                "UTF-8");
+//
+//        helper.setFrom(fromEmail);
+//        helper.setTo(order.getEmail());
+//        helper.setSubject("Your order with Toasted is in!");
+//
+//        String html = buildCustomerEmailBody(order);
+//        helper.setText(html, true);
+//
+//        mailSender.send(message);
+//    }
 
-    @Value("${app.orders.notifyEmail:}")
-    private String notifyEMail;
+    private final Resend resend;
+    private final String fromEmail;
+    private final String notifyEmail;
 
-    @Value("${app.mail.from:${spring.mail.username}}")
-    private String fromEmail;
-
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailService(
+            @Value("${resend.api.key}") String resendApiKey,
+            @Value("${app.mail.from}") String fromEmail,
+            @Value("${app.orders.notifyEmail}") String notifyEmail
+    ) {
+        this.resend = new Resend(resendApiKey);
+        this.fromEmail = fromEmail;
+        this.notifyEmail = notifyEmail;
     }
 
-    public void sendOrderEmails(OrderRequest order) throws Exception {
-        System.out.println("Order items: " + order.getItems());
-        sendBusinessEmail(order);
-        sendCustomerEmail(order);
-    }
+    public void sendOrderEmails(OrderRequest order) {
+        SendEmailRequest businessEmail = SendEmailRequest.builder()
+                .from(fromEmail)
+                .to(notifyEmail)
+                .subject("New Order for " + order.getName() + " - " + order.getOrderID())
+                .html(buildBusinessEmailBody(order))
+                .build();
+        resend.emails().send(businessEmail);
 
-    private void sendBusinessEmail(OrderRequest order) throws Exception {
-        /* Send order email to me */
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                "UTF-8");
-
-        helper.setFrom(fromEmail);
-        helper.setTo(notifyEMail);
-        helper.setSubject("New Toasted Order Received: " + order.getName());
-
-        String html = buildBusinessEmailBody(order);
-        helper.setText(html, true);
-
-        mailSender.send(message);
-    }
-
-    private void sendCustomerEmail(OrderRequest order) throws Exception {
-        /* Send order email to customer */
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                "UTF-8");
-
-        helper.setFrom(fromEmail);
-        helper.setTo(order.getEmail());
-        helper.setSubject("Your order with Toasted is in!");
-
-        String html = buildCustomerEmailBody(order);
-        helper.setText(html, true);
-
-        mailSender.send(message);
+        SendEmailRequest customerEmail = SendEmailRequest.builder()
+                .from(fromEmail)
+                .to(order.getEmail())
+                .subject("Your Flour & Flask order is in! - " + order.getOrderID())
+                .html(buildCustomerEmailBody(order))
+                .build();
+        resend.emails().send(customerEmail);
     }
 
     private String formattedDate(String orderDate) {
