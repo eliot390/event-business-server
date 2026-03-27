@@ -252,13 +252,14 @@ public class EmailService {
                <p style="color:#718096;">If you have questions, please contact us at chefeliotison@gmail.com.</p>
             </div>
         """.formatted(
-           firstName(order.getName()),
-           order.getOrderID(),
-           order.getPaymentMethod(), paymentHtml,
-           formattedDate(order.getOrderDate()),
-           order.getDeliveryMethod(), addressHtml,
-           itemsHtml.toString(),
-           order.getComments(),
-           total);
+            firstName(order.getName()),
+            order.getOrderID(),
+            formattedDate(order.getOrderDate()),
+            order.getDeliveryMethod(),
+            addressHtml,
+            paymentHtml,
+            itemsHtml.toString(),
+            order.getComments(),
+            total);
     }
 }
