@@ -108,7 +108,7 @@ public class EmailService {
                <p>Payment Method: %s</p>
                <p>Scheduled Delivery/Pickup: %s</p>
                <p>Phone: %s</p>
-               <p>E-mail: %s</p>
+               <p>Email: %s</p>
                <p>Comments: %s</p>
                <p>Delivery method: %s%s</p>
                <table width="100%%" style="border-collapse:collapse;">
