@@ -174,31 +174,6 @@ public class EmailService {
             addressHtml = "<br/>Delivery Address:<br/>" + formatted;
         }
 
-        Map<String, String> paymentImages = Map.of(
-                "venmo", "https://flourandflask.com/assets/venmo-BvIG2fya.png",
-                "zelle", "https://flourandflask.com/assets/zelle-Bv762fya.png"
-        );
-
-        String method = order.getPaymentMethod().toLowerCase();
-        String imageUrl = paymentImages.get(method);
-
-        String paymentDetails = "";
-        if ("venmo".equals(method)) {
-            paymentDetails = "<p style=\"margin:5px 0 0;\">Venmo ID: @Eliot-Pardo</p>";
-        } else if ("zelle".equals(method)) {
-            paymentDetails = "<p style=\"margin:5px 0 0;\">Zelle: 818-439-1123</p>";
-        }
-
-        String paymentHtml = imageUrl != null
-                ? """
-                  <p>
-                    Payment Method:<br/>
-                    <img src="%s" alt="%s" style="height:40px; display:block; margin-top:5px;" />
-                    %s
-                  </p>
-                  """.formatted(imageUrl, method, paymentDetails)
-                            : "<p>Payment Method: %s</p>".formatted(order.getPaymentMethod());
-
         for(OrderItemDTO item : order.getItems()){
             double line = item.getQuantity() * item.getPrice();
             total += line;
@@ -257,7 +232,6 @@ public class EmailService {
             formattedDate(order.getOrderDate()),
             order.getDeliveryMethod(),
             addressHtml,
-            paymentHtml,
             itemsHtml.toString(),
             order.getComments(),
             total);
