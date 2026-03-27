@@ -230,8 +230,7 @@ public class EmailService {
             firstName(order.getName()),
             order.getOrderID(),
             formattedDate(order.getOrderDate()),
-            order.getDeliveryMethod(),
-            addressHtml,
+            order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
             order.getComments(),
             total);
