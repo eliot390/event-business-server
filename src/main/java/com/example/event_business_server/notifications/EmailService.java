@@ -168,7 +168,7 @@ public class EmailService {
                 }
             }
 
-            addressHtml = "<br/>Delivery address:<br/>" + formatted;
+            addressHtml = "<br/>Delivery Address:<br/>" + formatted;
         }
 
         for(OrderItemDTO item : order.getItems()){
@@ -191,11 +191,18 @@ public class EmailService {
         }
 
         return """
-            <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
+            <link href="https://db.onlinewebfonts.com/c/111831f1adf5b66e99ecfe36b9033523?family=Milliard+Heavy" rel="stylesheet">
+            <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:2px 20px;">
+                <div style="display:flex; justify-content:center">
+                    <img src="https://flourandflask.com/assets/logo-grn-ZqpFJqM0.png" style="width:5rem">
+                    <p style="color:#2EC4B6; font-family:Milliard Heavy; font-size:40px; text-align:center; margin:0px;">
+                        <a href="https://www.flourandflask.com" target="_blank" style="text-decoration:none; color:inherit">Flour & Flask</a>
+                    </p>
+                </div>
                <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
                <p>Order #: %s</p>
                <p>Order Date: %s</p>
-               <p>Delivery method: %s%s</p>
+               <p>Delivery Method: %s%s</p>
 
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
@@ -215,7 +222,7 @@ public class EmailService {
         
                <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
         
-               <p style="color:#718096;">If you have questions, please contact us at chefeliotison.</p>
+               <p style="color:#718096;">If you have questions, please contact us at chefeliotison@gmail.com.</p>
             </div>
         """.formatted(
            firstName(order.getName()),
