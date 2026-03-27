@@ -12,6 +12,7 @@ public class OrderRequest {
     private String deliveryCity;
     private String deliveryZip;
     private String orderDate;
+    private String paymentMethod;
     private String comments;
     private List<OrderItemDTO> items;
     private double total;
@@ -28,6 +29,7 @@ public class OrderRequest {
             String deliveryCity,
             String deliveryZip,
             String orderDate,
+            String paymentMethod,
             String comments,
             List<OrderItemDTO> items,
             double total) {
@@ -40,6 +42,7 @@ public class OrderRequest {
         this.deliveryCity = deliveryCity;
         this.deliveryZip = deliveryZip;
         this.orderDate = orderDate;
+        this.paymentMethod = paymentMethod;
         this.comments = comments;
         this.items = items;
         this.total = total;
@@ -115,6 +118,14 @@ public class OrderRequest {
 
     public void setOrderDate(String orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public String getComments() {

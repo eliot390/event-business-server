@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import com.resend.services.emails.model.SendEmailRequest;
 
@@ -104,6 +105,7 @@ public class EmailService {
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
                <p>Order #: %s</p>
+               <p>Payment Method: %s</p>
                <p>Scheduled Delivery/Pickup: %s</p>
                <p>Phone: %s</p>
                <p>E-mail: %s</p>
@@ -127,6 +129,7 @@ public class EmailService {
         """.formatted(
             order.getName(),
             order.getOrderID(),
+            order.getPaymentMethod(),
             formattedDate(order.getOrderDate()),
             order.getPhone(),
             order.getEmail(),
@@ -170,6 +173,31 @@ public class EmailService {
 
             addressHtml = "<br/>Delivery Address:<br/>" + formatted;
         }
+
+        Map<String, String> paymentImages = Map.of(
+                "venmo", "https://flourandflask.com/assets/venmo-BvIG2fya.png",
+                "zelle", "https://flourandflask.com/assets/zelle-Bv762fya.png"
+        );
+
+        String method = order.getPaymentMethod().toLowerCase();
+        String imageUrl = paymentImages.get(method);
+
+        String paymentDetails = "";
+        if ("venmo".equals(method)) {
+            paymentDetails = "<p style=\"margin:5px 0 0;\">Venmo ID: @Eliot-Pardo</p>";
+        } else if ("zelle".equals(method)) {
+            paymentDetails = "<p style=\"margin:5px 0 0;\">Zelle: 818-439-1123</p>";
+        }
+
+        String paymentHtml = imageUrl != null
+                ? """
+                  <p>
+                    Payment Method:<br/>
+                    <img src="%s" alt="%s" style="height:40px; display:block; margin-top:5px;" />
+                    %s
+                  </p>
+                  """.formatted(imageUrl, method, paymentDetails)
+                            : "<p>Payment Method: %s</p>".formatted(order.getPaymentMethod());
 
         for(OrderItemDTO item : order.getItems()){
             double line = item.getQuantity() * item.getPrice();
@@ -226,6 +254,7 @@ public class EmailService {
         """.formatted(
            firstName(order.getName()),
            order.getOrderID(),
+           order.getPaymentMethod(), paymentHtml,
            formattedDate(order.getOrderDate()),
            order.getDeliveryMethod(), addressHtml,
            itemsHtml.toString(),
