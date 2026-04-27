@@ -54,7 +54,7 @@ public class EmailService {
 
     private String buildBusinessEmailBody(OrderRequest order){
         StringBuilder itemsHtml = new StringBuilder();
-        double total = 0;
+        double subtotal = 0;
 
         String addressHtml = "";
 
@@ -84,7 +84,7 @@ public class EmailService {
 
         for(OrderItemDTO item : order.getItems()){
             double line = item.getQuantity() * item.getPrice();
-            total += line;
+            subtotal += line;
 
             itemsHtml.append("""
                 <tr style="background:white;">
@@ -136,7 +136,7 @@ public class EmailService {
             order.getComments(),
             order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
-            total
+            subtotal
         );
     }
 
@@ -146,7 +146,7 @@ public class EmailService {
 
     private String buildCustomerEmailBody(OrderRequest order){
         StringBuilder itemsHtml = new StringBuilder();
-        double total = 0;
+        double subtotal = 0;
 
         String addressHtml = "";
 
@@ -176,7 +176,7 @@ public class EmailService {
 
         for(OrderItemDTO item : order.getItems()){
             double line = item.getQuantity() * item.getPrice();
-            total += line;
+            subtotal += line;
 
             itemsHtml.append("""
                 <tr style="background:white;">
@@ -202,9 +202,26 @@ public class EmailService {
                      </p>
                  </div>
                <h2 style="color:#2EC4B6;">Thank you for your order %s!</h2>
-               <p>Order #: %s</p>
-               <p>Order Date: %s</p>
-               <p>Delivery Method: %s%s</p>
+               <h3 style="color:#1e2939">Order #: %s</h3>
+               <table width="100%%" style="color:#1e2939; border-collapse:collapse; border-color:black; border-style:solid; border-width:1px;">
+                   <thead>
+                   <tr style="background:#CBF3F0; border-bottom:black; border-style:solid; border-width:1px">
+                       <th align="left" style="padding:8px;">Order Date</th>
+                       <th align="left" style="padding:8px;">Method</th>
+                       <th align="left" style="padding:8px;">Address</th>
+                       <th align="left" style="padding:8px;">Payment Method</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   <tr style="background:white">
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                   </tr>
+                   </tbody>
+               </table>
+               <br><br>
 
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
@@ -231,8 +248,9 @@ public class EmailService {
             order.getOrderID(),
             formattedDate(order.getOrderDate()),
             order.getDeliveryMethod(), addressHtml,
+            order.getPaymentMethod(),
             itemsHtml.toString(),
             order.getComments(),
-            total);
+            subtotal);
     }
 }
