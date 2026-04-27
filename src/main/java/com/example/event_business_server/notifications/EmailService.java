@@ -79,7 +79,7 @@ public class EmailService {
                 }
             }
 
-            addressHtml = "<br/>Delivery address:<br/>" + formatted;
+            addressHtml = "" + formatted;
         }
 
         for(OrderItemDTO item : order.getItems()){
@@ -104,13 +104,30 @@ public class EmailService {
         return """
             <div style="background:#EEFBFA; border-color:#CBF3F0; border-style:solid; border-width:2px; font-family: Arial, sans-serif; max-width:800px; margin:auto; padding:10px 20px;">
                <h2 style="color:#2EC4B6;">New order for %s</h2>
-               <p>Order #: %s</p>
-               <p>Payment Method: %s</p>
-               <p>Scheduled Delivery/Pickup: %s</p>
-               <p>Phone: %s</p>
-               <p>Email: %s</p>
-               <p>Comments: %s</p>
-               <p>Delivery method: %s%s</p>
+               <h3 style="color:#1e2939">Order #: %s</h3>
+               <table width="100%%" style="color:#1e2939; border-collapse:collapse; border-color:black; border-style:solid; border-width:1px;">
+                   <thead>
+                   <tr style="background:#CBF3F0; border-bottom:black; border-style:solid; border-width:1px">
+                       <th align="left" style="padding:8px;">Delivery/Pickup Date</th>
+                       <th align="left" style="padding:8px;">Delivery Method</th>
+                       <th align="left" style="padding:8px;">Delivery Address</th>
+                       <th align="left" style="padding:8px;">Payment Method</th>
+                       <th align="left" style="padding:8px;">Phone</th>
+                       <th align="left" style="padding:8px;">Email</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   <tr style="background:white">
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                       <td style="padding:8px;">%s</td>
+                   </tr>
+                   </tbody>
+               </table>
+               <br><br>
                <table width="100%%" style="border-collapse:collapse;">
                    <thead>
                    <tr style="background:#FFE4C2; color:#2EC4B6; border-color:#FF9F1C; border-style:solid; border-width:2px;">
@@ -124,18 +141,19 @@ public class EmailService {
                       %s
                     </tbody>
                 </table>
+                <p>Customer Notes: %s</p>
                 <h3 style="text-align:right; margin-top:20px;">Order Total: $%.2f</h3>
             </div>
         """.formatted(
             order.getName(),
             order.getOrderID(),
-            order.getPaymentMethod(),
             formattedDate(order.getOrderDate()),
+            order.getDeliveryMethod(), addressHtml,
+            order.getPaymentMethod(),
             order.getPhone(),
             order.getEmail(),
-            order.getComments(),
-            order.getDeliveryMethod(), addressHtml,
             itemsHtml.toString(),
+            order.getComments(),
             subtotal
         );
     }
@@ -171,7 +189,7 @@ public class EmailService {
                 }
             }
 
-            addressHtml = "<br/>Delivery Address:<br/>" + formatted;
+            addressHtml = "" + formatted;
         }
 
         for(OrderItemDTO item : order.getItems()){
